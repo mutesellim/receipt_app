@@ -11,6 +11,7 @@ class _CookReceiptsState extends State<CookReceipts> {
   Widget build(BuildContext context) {
     double myHeight = MediaQuery.of(context).size.height / 5;
     double myWidth = MediaQuery.of(context).size.width / 2;
+
     return GridView.count(
       crossAxisCount: 2,
       crossAxisSpacing: 10,
@@ -31,7 +32,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Container(
                         child: Image.asset(
-                          "assets/lahmacun.jpg",
+                          "assets/dolma.jpg",
                           height: myHeight,
                           width: myWidth,
                           fit: BoxFit.contain,
@@ -40,7 +41,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                     ),
                   ),
                   Text(
-                    "Lahmacun assssssss ssssssss ssssss sssss",
+                    "Dolma Altbaşlık",
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
@@ -74,7 +75,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                     ),
                   ),
                   Text(
-                    "Lahmacun assssssss ssssssss ssssss sssss",
+                    "Lahmacun Altbaşlık",
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
@@ -99,7 +100,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: Container(
                         child: Image.asset(
-                          "assets/lahmacun.jpg",
+                          "assets/pide.jpg",
                           height: myHeight,
                           width: myWidth,
                           fit: BoxFit.contain,
@@ -108,7 +109,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                     ),
                   ),
                   Text(
-                    "Lahmacun assssssss ssssssss ssssss sssss",
+                    "Pide Altbaşlık",
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),
@@ -142,7 +143,7 @@ class _CookReceiptsState extends State<CookReceipts> {
                     ),
                   ),
                   Text(
-                    "Lahmacun assssssss ssssssss ssssss sssss",
+                    "Lahmacun Altbaşlık",
                     maxLines: 2,
                     textAlign: TextAlign.center,
                   ),

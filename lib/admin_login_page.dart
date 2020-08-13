@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_adding_page.dart';
+import 'package:flutter_cook_book/receipt_detail_page.dart';
 
 class AdminLogin extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _AdminLoginState extends State<AdminLogin> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Şifre:            ",
+                    "Şifre:              ",
                   ),
                   Container(
                     width: 200,
@@ -83,7 +84,7 @@ class _AdminLoginState extends State<AdminLogin> {
                         MaterialPageRoute(builder: (context) => ReceiptAddingPage()));
                   }
                 },
-                child: Text("Griş Yap"),
+                child: Text("Giriş Yap"),
               ),
             ],
           ),

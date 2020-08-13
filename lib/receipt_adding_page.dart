@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cook_book/models/receipts.dart';
+import 'package:flutter_cook_book/utils/database_helper.dart';
 
 class ReceiptAddingPage extends StatefulWidget {
   @override
@@ -6,83 +8,113 @@ class ReceiptAddingPage extends StatefulWidget {
 }
 
 class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
-  String receiptTitle;
-  String receiptDescription;
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
+  List<Receipts> allReceipts;
+  DatabaseHelper databaseHelper;
+  String receiptTitle, receiptDescription, videoURL;
 
-  @override
-  void dispose() {
-    titleController.dispose();
-    descriptionController.dispose();
-    super.dispose();
-  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    receiptTitle=titleController.text;
-    receiptDescription=descriptionController.text;
+    allReceipts = List<Receipts>();
+    databaseHelper = DatabaseHelper();
+    databaseHelper.getReceipts().then((receiptsMapList) {
+      for (Map readMap in receiptsMapList) {
+        allReceipts.add(Receipts.fromMap(readMap));
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Başlık:    ",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  width: 200,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 2),
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        controller: titleController,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Açıklama:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  width: 200,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 2),
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: TextFormField(
-                        controller: descriptionController,
-                        maxLines: 5,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      resizeToAvoidBottomPadding: false,
+      appBar: AppBar(
+        title: Text("asd"),
       ),
+      body: allReceipts.length > 0
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        validator: (text) {
+                          if (text.length < 2) {
+                            return "En az 3 Karakter Giriniz";
+                          }
+                        },
+                        onSaved: (text) {
+                          receiptTitle = text;
+                        },
+                        decoration: InputDecoration(
+                            hintText: "Tarif Başlığını Giriniz",
+                            labelText: "Başlık",
+                            border: OutlineInputBorder()),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        onSaved: (text) {
+                          videoURL = text;
+                        },
+                        decoration: InputDecoration(
+                            hintText: "Video için URL Giriniz",
+                            labelText: "URL",
+                            border: OutlineInputBorder()),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        onSaved: (text) {
+                          receiptDescription = text;
+                        },
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                            hintText: "Tarif İçeriğini Giriniz",
+                            labelText: "İçerik",
+                            border: OutlineInputBorder()),
+                      ),
+                    ),
+                    ButtonBar(
+                      children: [
+                        RaisedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("Vazgeç"),
+                        ),
+                        RaisedButton(
+                          onPressed: () {
+                            if (formKey.currentState.validate()) {
+                              formKey.currentState.save();
+                              databaseHelper
+                                  .addReceipt(Receipts(2,2,receiptTitle,
+                                      receiptDescription, videoURL))
+                                  .then((savedReceiptID) {
+                                if (savedReceiptID != 0) {
+                                  debugPrint(
+                                      "gelen veri: $receiptTitle $receiptDescription $videoURL");
+                                }
+                              });
+                            }
+                          },
+                          child: Text("Kaydet"),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }
