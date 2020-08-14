@@ -98,7 +98,7 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getReceipts() async {
     var db = await _getDatabase();
     var result = await db.rawQuery(
-        'select * from "receipts" inner join pictures on pictures.pictureID = "receipts".pictureID order by receiptID Desc;');
+        'select * from "receips" order by receiptsID Desc;');
     return result;
   }
 

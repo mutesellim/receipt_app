@@ -5,7 +5,7 @@ class Receipts {
   String receiptDescription;
   String videoURL;
 
-  Receipts(this.receiptID,this.pictureID,this.receiptTitle,
+  Receipts(this.receiptTitle,
       this.receiptDescription, this.videoURL);
 
   Map<String,dynamic>toMap(){

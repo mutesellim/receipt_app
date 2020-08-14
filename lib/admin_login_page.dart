@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_adding_page.dart';
@@ -11,6 +12,9 @@ class AdminLogin extends StatefulWidget {
 class _AdminLoginState extends State<AdminLogin> {
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var authResult;
+  var firebaseUser;
 
   @override
   void dispose() {
@@ -78,11 +82,7 @@ class _AdminLoginState extends State<AdminLogin> {
               ),
               RaisedButton(
                 onPressed: () {
-                  if (userNameController.text == "admin" &&
-                      passwordController.text == "admin") {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ReceiptAddingPage()));
-                  }
+                  createUserWithEmailandPassword();
                 },
                 child: Text("Giriş Yap"),
               ),
@@ -91,5 +91,23 @@ class _AdminLoginState extends State<AdminLogin> {
         ),
       ),
     );
+  }
+
+  void createUserWithEmailandPassword() async {
+    String mail = "mehmet@mehmet.com";
+    String password = "12345678";
+    var authResult = await _auth
+        .signInWithEmailAndPassword(
+          email: mail,
+          password: password,
+        )
+        .catchError((e) => debugPrint("Error :" + e.toString()));
+    var firebaseUser = authResult.user;
+
+    if (userNameController.text == firebaseUser.email &&
+        passwordController.text == firebaseUser.uid) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ReceiptAddingPage()));
+    }
   }
 }
