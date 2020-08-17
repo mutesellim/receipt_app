@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_adding_page.dart';
-import 'package:flutter_cook_book/receipt_detail_page.dart';
 
 class AdminLogin extends StatefulWidget {
   @override
@@ -94,18 +93,20 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   void createUserWithEmailandPassword() async {
-    String mail = "mehmet@mehmet.com";
-    String password = "12345678";
+    String mail = userNameController.text;
+    String password = passwordController.text;
+    final snackbar = SnackBar(
+      content: Text("Kullanıcı Adı veya Şifre Hatalı"),
+    );
     var authResult = await _auth
         .signInWithEmailAndPassword(
           email: mail,
           password: password,
         )
-        .catchError((e) => debugPrint("Error :" + e.toString()));
-    var firebaseUser = authResult.user;
+        .catchError((e) => debugPrint(e));
 
-    if (userNameController.text == firebaseUser.email &&
-        passwordController.text == firebaseUser.uid) {
+    if (userNameController.text == mail &&
+        passwordController.text == password) {
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => ReceiptAddingPage()));
     }

@@ -12,7 +12,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   final Firestore firestore = Firestore.instance;
   Map<String, dynamic> myReceipts = Map();
   int receiptCount = 1;
-  String receiptTitle, receiptDescription, videoURL;
+  String receiptTitle, receiptDescription, videoURL,pictureURL;
 
   @override
   void initState() {
@@ -74,6 +74,18 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                       border: OutlineInputBorder()),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  onSaved: (text) {
+                    pictureURL = text;
+                  },
+                  decoration: InputDecoration(
+                      hintText: "Resim URL giriniz",
+                      labelText: "PictureURL",
+                      border: OutlineInputBorder()),
+                ),
+              ),
               ButtonBar(
                 children: [
                   RaisedButton(
@@ -89,6 +101,8 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                         myReceipts["receiptTitle"] = receiptTitle;
                         myReceipts["receiptDescription"] = receiptDescription;
                         myReceipts["videoURL"] = videoURL;
+                        myReceipts["pictureURL"] = pictureURL;
+
                         firestore
                             .document(
                                 "receipts/allreceipts/receiptID/$receiptCount")

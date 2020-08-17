@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_detail_page.dart';
 
-class CookReceipts extends StatefulWidget {
+class ReceiptsList extends StatefulWidget {
   @override
-  _CookReceiptsState createState() => _CookReceiptsState();
+  _ReceiptsListState createState() => _ReceiptsListState();
 }
 
-class _CookReceiptsState extends State<CookReceipts> {
+class _ReceiptsListState extends State<ReceiptsList> {
   @override
   Widget build(BuildContext context) {
     double myHeight = MediaQuery.of(context).size.height / 5;
