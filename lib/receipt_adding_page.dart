@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReceiptAddingPage extends StatefulWidget {
   @override
@@ -11,13 +11,32 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   var formKey = GlobalKey<FormState>();
   final Firestore firestore = Firestore.instance;
   Map<String, dynamic> myReceipts = Map();
-  int receiptCount = 1;
-  String receiptTitle, receiptDescription, videoURL,pictureURL;
+  String receiptTitle, receiptDescription, videoURL, pictureURL;
+  int _counter = 1;
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _loadCounter();
+    SharedPreferences.setMockInitialValues({});
+  }
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _counter = (prefs.getInt('counter') ?? 0);
+    });
+  }
+
+  //Incrementing counter after click
+  _incrementCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _counter = (prefs.getInt('counter') ?? 0) + 1;
+      prefs.setInt('counter', _counter);
+    });
   }
 
   @override
@@ -96,6 +115,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                   ),
                   RaisedButton(
                     onPressed: () {
+
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
                         myReceipts["receiptTitle"] = receiptTitle;
@@ -105,9 +125,9 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
 
                         firestore
                             .document(
-                                "receipts/allreceipts/receiptID/$receiptCount")
+                                "receipts/allreceipts/receiptID/$_counter")
                             .setData(myReceipts);
-                        receiptCount++;
+                        _incrementCounter();
                       }
                     },
                     child: Text("Kaydet"),

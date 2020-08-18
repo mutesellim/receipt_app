@@ -2,11 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class DetailPage extends StatefulWidget {
+  int index;
+
+  DetailPage(this.index);
+
   @override
   _DetailPageState createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
+
   @override
   void initState() {
     // TODO: implement initState
@@ -15,10 +20,17 @@ class _DetailPageState extends State<DetailPage> {
 
   final Firestore _firestore = Firestore.instance;
 
+
   @override
   Widget build(BuildContext context) {
-    double myHeight = MediaQuery.of(context).size.height / 3;
-    double myWidth = MediaQuery.of(context).size.width * (5 / 6);
+    double myHeight = MediaQuery
+        .of(context)
+        .size
+        .height / 3;
+    double myWidth = MediaQuery
+        .of(context)
+        .size
+        .width * (5 / 6);
 
     return Scaffold(
         appBar: AppBar(
@@ -103,7 +115,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptTitle() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/1")
+        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
         .get()
         .then((value) {
       title = value.data["receiptTitle"];
@@ -114,7 +126,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptDescription() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/1")
+        .document("receipts/allreceipts/receiptID/"+widget.index.toString())
         .get()
         .then((value) {
       title = value.data["receiptDescription"];
@@ -125,7 +137,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptURL() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/1")
+        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
         .get()
         .then((value) {
       title = value.data["receiptTitle"];
@@ -136,7 +148,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getPictureURL() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/1")
+        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
         .get()
         .then((value) {
       title = value.data["pictureURL"];
