@@ -1,43 +1,79 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+
+class CounterStorage {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/counter.txt');
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await _localFile;
+
+      // Read the file
+      String contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+
+  Future<File> writeCounter(int counter) async {
+    final file = await _localFile;
+
+    // Write the file
+    return file.writeAsString('$counter');
+  }
+}
 
 class ReceiptAddingPage extends StatefulWidget {
+  final CounterStorage storage;
+
+  ReceiptAddingPage({Key key, @required this.storage}) : super(key: key);
+
   @override
   _ReceiptAddingPageState createState() => _ReceiptAddingPageState();
 }
+
 
 class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   var formKey = GlobalKey<FormState>();
   final Firestore firestore = Firestore.instance;
   Map<String, dynamic> myReceipts = Map();
   String receiptTitle, receiptDescription, videoURL, pictureURL;
-  int _counter = 1;
-
+  int counter;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _loadCounter();
-    SharedPreferences.setMockInitialValues({});
-  }
-
-  _loadCounter() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _counter = (prefs.getInt('counter') ?? 0);
+    widget.storage.readCounter().then((int value) {
+      setState(() {
+        counter = value;
+      });
     });
   }
 
-  //Incrementing counter after click
-  _incrementCounter() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<File> _incrementCounter() {
     setState(() {
-      _counter = (prefs.getInt('counter') ?? 0) + 1;
-      prefs.setInt('counter', _counter);
+      counter++;
     });
+
+    // Write the variable as a string to the file.
+    return widget.storage.writeCounter(counter);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +151,6 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                   ),
                   RaisedButton(
                     onPressed: () {
-
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
                         myReceipts["receiptTitle"] = receiptTitle;
@@ -125,7 +160,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
 
                         firestore
                             .document(
-                                "receipts/allreceipts/receiptID/$_counter")
+                                "receipts/allreceipts/receiptID/$counter")
                             .setData(myReceipts);
                         _incrementCounter();
                       }

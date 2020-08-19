@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+
 class DetailPage extends StatefulWidget {
   int index;
 
@@ -11,26 +12,20 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   }
 
-  final Firestore _firestore = Firestore.instance;
 
+
+  final Firestore _firestore = Firestore.instance;
 
   @override
   Widget build(BuildContext context) {
-    double myHeight = MediaQuery
-        .of(context)
-        .size
-        .height / 3;
-    double myWidth = MediaQuery
-        .of(context)
-        .size
-        .width * (5 / 6);
+    double myHeight = MediaQuery.of(context).size.height / 3;
+    double myWidth = MediaQuery.of(context).size.width * (5 / 6);
 
     return Scaffold(
         appBar: AppBar(
@@ -126,7 +121,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptDescription() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/"+widget.index.toString())
+        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
         .get()
         .then((value) {
       title = value.data["receiptDescription"];

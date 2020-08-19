@@ -3,6 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_detail_page.dart';
 
+
+
+
+
+
 class ReceiptsList extends StatefulWidget {
   @override
   _ReceiptsListState createState() => _ReceiptsListState();
@@ -10,21 +15,24 @@ class ReceiptsList extends StatefulWidget {
 
 final Firestore _firestore = Firestore.instance;
 
-
 class _ReceiptsListState extends State<ReceiptsList> {
+
+
   @override
   Widget build(BuildContext context) {
     double myWidth = MediaQuery.of(context).size.width;
 
+
+
     return GridView.builder(
       gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),itemCount:3 ,
+          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
+      itemCount: 3,
       itemBuilder: (context, index) {
         Future<String> getPictureURL() async {
           String title;
           await _firestore
-              .document(
-                  "receipts/allreceipts/receiptID/" + (index + 1).toString())
+              .document("receipts/allreceipts/receiptID/" + index.toString())
               .get()
               .then((value) {
             title = value.data["pictureURL"];
@@ -35,8 +43,7 @@ class _ReceiptsListState extends State<ReceiptsList> {
         Future<String> getReceiptTitle() async {
           String title;
           await _firestore
-              .document(
-                  "receipts/allreceipts/receiptID/" + (index + 1).toString())
+              .document("receipts/allreceipts/receiptID/" + index.toString())
               .get()
               .then((value) {
             title = value.data["receiptTitle"];
@@ -50,10 +57,8 @@ class _ReceiptsListState extends State<ReceiptsList> {
           children: [
             InkWell(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailPage(index + 1)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => DetailPage(index)));
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

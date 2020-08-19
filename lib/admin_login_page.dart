@@ -107,8 +107,11 @@ class _AdminLoginState extends State<AdminLogin> {
 
     if (userNameController.text == mail &&
         passwordController.text == password) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => ReceiptAddingPage()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  ReceiptAddingPage(storage: CounterStorage())));
     }
   }
 }
