@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cook_book/home_page.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CounterStorage {
@@ -12,6 +13,7 @@ class CounterStorage {
 
   Future<File> get _localFile async {
     final path = await _localPath;
+
     return File('$path/counter.txt');
   }
 
@@ -46,13 +48,13 @@ class ReceiptAddingPage extends StatefulWidget {
   _ReceiptAddingPageState createState() => _ReceiptAddingPageState();
 }
 
-
 class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
-  var formKey = GlobalKey<FormState>();
-  final Firestore firestore = Firestore.instance;
-  Map<String, dynamic> myReceipts = Map();
-  String receiptTitle, receiptDescription, videoURL, pictureURL;
-  int counter;
+  var _formKey = GlobalKey<FormState>();
+  var _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Firestore _firestore = Firestore.instance;
+  Map<String, dynamic> _myReceipts = Map();
+  String _receiptTitle, _receiptDescription, _videoURL, _pictureURL;
+  int _counter;
 
   @override
   void initState() {
@@ -60,31 +62,31 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
     super.initState();
     widget.storage.readCounter().then((int value) {
       setState(() {
-        counter = value;
+        _counter = value;
       });
     });
   }
 
   Future<File> _incrementCounter() {
     setState(() {
-      counter++;
+      _counter++;
     });
 
     // Write the variable as a string to the file.
-    return widget.storage.writeCounter(counter);
+    return widget.storage.writeCounter(_counter);
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text("Receipt Adding Page"),
       ),
       body: Container(
         child: Form(
-          key: formKey,
+          key: _formKey,
           child: Column(
             children: [
               Padding(
@@ -96,7 +98,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                     }
                   },
                   onSaved: (text) {
-                    receiptTitle = text;
+                    _receiptTitle = text;
                   },
                   decoration: InputDecoration(
                       hintText: "Tarif Başlığını Giriniz",
@@ -108,7 +110,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   onSaved: (text) {
-                    videoURL = text;
+                    _videoURL = text;
                   },
                   decoration: InputDecoration(
                       hintText: "Video için URL Giriniz",
@@ -120,7 +122,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   onSaved: (text) {
-                    receiptDescription = text;
+                    _receiptDescription = text;
                   },
                   maxLines: 5,
                   decoration: InputDecoration(
@@ -133,7 +135,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   onSaved: (text) {
-                    pictureURL = text;
+                    _pictureURL = text;
                   },
                   decoration: InputDecoration(
                       hintText: "Resim URL giriniz",
@@ -145,24 +147,31 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                 children: [
                   RaisedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
                     },
                     child: Text("Vazgeç"),
                   ),
                   RaisedButton(
                     onPressed: () {
-                      if (formKey.currentState.validate()) {
-                        formKey.currentState.save();
-                        myReceipts["receiptTitle"] = receiptTitle;
-                        myReceipts["receiptDescription"] = receiptDescription;
-                        myReceipts["videoURL"] = videoURL;
-                        myReceipts["pictureURL"] = pictureURL;
+                      final snackBar = SnackBar(content: Text("Tarif Eklendi"));
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                        _myReceipts["receiptTitle"] = _receiptTitle;
+                        _myReceipts["receiptDescription"] = _receiptDescription;
+                        _myReceipts["videoURL"] = _videoURL;
+                        _myReceipts["pictureURL"] = _pictureURL;
 
-                        firestore
+                        _firestore
                             .document(
-                                "receipts/allreceipts/receiptID/$counter")
-                            .setData(myReceipts);
+                                "receipts/allreceipts/receiptID/$_counter")
+                            .setData(_myReceipts);
                         _incrementCounter();
+                        _scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text("Tarif Eklendi"),
+                          duration: Duration(seconds: 1),
+                        ));
+                        _formKey.currentState.reset();
                       }
                     },
                     child: Text("Kaydet"),

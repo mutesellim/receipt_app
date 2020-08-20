@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         title: Text("Ana Sayfa"),
       ),
       body: Center(
-        child: ReceiptsList(),
+        child: ReceiptsList(storage: MyStorage(),),
       ),
     );
   }

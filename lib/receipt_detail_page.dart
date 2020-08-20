@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class DetailPage extends StatefulWidget {
@@ -86,6 +87,26 @@ class _DetailPageState extends State<DetailPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: FutureBuilder(
+                        future: getVideoURL(),
+                        builder: (context, AsyncSnapshot<String> snapshot) {
+                          if (snapshot.hasData) {
+                            return InkWell(
+                              child: Text(
+                                snapshot.data,
+                                style: TextStyle(
+                                    fontSize: 12,)
+                              ),onTap: ()=>launch(snapshot.data),
+                            );
+                          } else
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FutureBuilder(
                         future: getReceiptDescription(),
                         builder: (context, AsyncSnapshot<String> snapshot) {
                           if (snapshot.hasData) {
@@ -129,13 +150,13 @@ class _DetailPageState extends State<DetailPage> {
     return title;
   }
 
-  Future<String> getReceiptURL() async {
+  Future<String> getVideoURL() async {
     String title;
     await _firestore
         .document("receipts/allreceipts/receiptID/" + widget.index.toString())
         .get()
         .then((value) {
-      title = value.data["receiptTitle"];
+      title = value.data["videoURL"];
     });
     return title;
   }
