@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
                 PopupMenuItem(
                   child: ListTile(
                     leading: Icon(Icons.person),
-                    title: Text("Admin Girişi"),
+                    title: Text("Admin Login"),
                     onTap: () {
                       Navigator.push(
                           context,

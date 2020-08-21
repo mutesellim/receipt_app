@@ -9,22 +9,22 @@ class AdminLogin extends StatefulWidget {
 }
 
 class _AdminLoginState extends State<AdminLogin> {
-  final userNameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _userNameController = TextEditingController();
+  final _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  var authResult;
-  var firebaseUser;
+  var _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
-    userNameController.dispose();
-    passwordController.dispose();
+    _userNameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Login"),
       ),
@@ -49,7 +49,7 @@ class _AdminLoginState extends State<AdminLogin> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
                         child: TextFormField(
-                          controller: userNameController,
+                          controller: _userNameController,
                         ),
                       ),
                     ),
@@ -72,7 +72,7 @@ class _AdminLoginState extends State<AdminLogin> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
                         child: TextFormField(
-                          controller: passwordController,
+                          controller: _passwordController,
                         ),
                       ),
                     ),
@@ -93,20 +93,20 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   void createUserWithEmailandPassword() async {
-    String mail = userNameController.text;
-    String password = passwordController.text;
-    final snackbar = SnackBar(
-      content: Text("Kullanıcı Adı veya Şifre Hatalı"),
-    );
+    String mail = _userNameController.text;
+    String password = _passwordController.text;
     var authResult = await _auth
         .signInWithEmailAndPassword(
           email: mail,
           password: password,
         )
-        .catchError((e) => debugPrint(e));
+        .catchError((e) => _scaffoldKey.currentState.showSnackBar(SnackBar(
+              content: Text("Kullanıcı Adı veya Şifre Hatalı"),
+              duration: Duration(seconds: 2),
+            )));
 
-    if (userNameController.text == mail &&
-        passwordController.text == password) {
+    if (_userNameController.text == mail &&
+        _passwordController.text == password) {
       Navigator.push(
           context,
           MaterialPageRoute(
