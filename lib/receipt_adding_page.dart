@@ -164,8 +164,10 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
 
                         _firestore
                             .document(
-                                "receipts/allreceipts/receiptID/$_counter")
+                            "receipts/allreceipts/receiptID/$_counter")
                             .setData(_myReceipts);
+
+
                         _incrementCounter();
                         _scaffoldKey.currentState.showSnackBar(SnackBar(
                           content: Text("Tarif Eklendi"),

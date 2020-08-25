@@ -123,7 +123,7 @@ class _ReceiptsListState extends State<ReceiptsList> {
                       builder: (context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.hasData) {
                           return Text(
-                            snapshot.data + " Altbaşlık",
+                            snapshot.data,
                             maxLines: 2,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
