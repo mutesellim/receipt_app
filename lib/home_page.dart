@@ -85,30 +85,37 @@ class ReceiptSearch extends SearchDelegate<List> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    var list = [0, 1, 2, 3];
+
     Future<List> getList() async {
       List myList = [];
-      await _firestore
-          .document("receipts/allreceipts/receiptID/1")
-          .get()
-          .then((value) {
-        myList.add(value.data["receiptTitle"]);
-      });
+      for (int i = 0; i < list.length; i++) {
+        await _firestore
+            .document("receipts/allreceipts/receiptID/$i")
+            .get()
+            .then((value) {
+          myList.add(value.data["receiptTitle"]);
+        });
+      }
       return myList;
     }
 
-    final List suggestionList = [];
     return FutureBuilder(
         future: getList(),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
-            suggestionList.add(snapshot.data.toString());
+            final List suggestionList = [];
+            suggestionList.addAll(snapshot.data);
             return ListView.builder(
               itemBuilder: (context, index) {
-                return ListTile(
-                  onTap: goToDetail(),
-                  leading: Icon(Icons.local_dining),
-                  title: Text(suggestionList[index]),
-                );
+              return ListTile(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailPage(index))),
+                        leading: Icon(Icons.local_dining),
+                        title: Text(suggestionList[index]),
+                      );
               },
               itemCount: suggestionList.length,
             );
@@ -117,10 +124,5 @@ class ReceiptSearch extends SearchDelegate<List> {
               child: CircularProgressIndicator(),
             );
         });
-  }
-
-  goToDetail() {
-    //Navigator.push(_scaffoldKey.currentContext,
-    //   MaterialPageRoute(builder: (context) => DetailPage(1)));
   }
 }
