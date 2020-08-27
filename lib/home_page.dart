@@ -1,10 +1,45 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/admin_login_page.dart';
 import 'package:flutter_cook_book/receipt_detail_page.dart';
 import 'package:flutter_cook_book/receipt_list.dart';
+import 'package:path_provider/path_provider.dart';
+
+class MyOtherStorage {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+
+    return File('$path/counter.txt');
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await _localFile;
+
+      // Read the file
+      String contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+}
 
 class HomePage extends StatefulWidget {
+  final MyOtherStorage myOtherStorage;
+
+  HomePage({Key key, @required this.myOtherStorage}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -13,6 +48,19 @@ final Firestore _firestore = Firestore.instance;
 var _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class _HomePageState extends State<HomePage> {
+  int myCounter;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.myOtherStorage.readCounter().then((value) {
+      setState(() {
+        myCounter = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +70,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                showSearch(context: context, delegate: ReceiptSearch());
+                showSearch(
+                    context: context, delegate: ReceiptSearch(myCounter));
               }),
           PopupMenuButton(
             itemBuilder: (context) {
@@ -55,6 +104,10 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ReceiptSearch extends SearchDelegate<List> {
+  int counter;
+
+  ReceiptSearch(this.counter);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -80,16 +133,16 @@ class ReceiptSearch extends SearchDelegate<List> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return null;
+    return Center(
+      child: Text(query),
+    );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    var list = [0, 1, 2, 3];
-
     Future<List> getList() async {
       List myList = [];
-      for (int i = 0; i < list.length; i++) {
+      for (int i = 0; i < counter; i++) {
         await _firestore
             .document("receipts/allreceipts/receiptID/$i")
             .get()
@@ -104,18 +157,22 @@ class ReceiptSearch extends SearchDelegate<List> {
         future: getList(),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
-            final List suggestionList = [];
-            suggestionList.addAll(snapshot.data);
+            final List suggestionList = query.isEmpty
+                ? snapshot.data
+                : snapshot.data.where((element) => element == query).toList();
+
             return ListView.builder(
               itemBuilder: (context, index) {
-              return ListTile(
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DetailPage(index))),
-                        leading: Icon(Icons.local_dining),
-                        title: Text(suggestionList[index]),
-                      );
+                return ListTile(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DetailPage(query.isEmpty
+                              ? index
+                              : snapshot.data.indexOf(query)))),
+                  leading: Icon(Icons.local_dining),
+                  title: Text(suggestionList[index]),
+                );
               },
               itemCount: suggestionList.length,
             );
