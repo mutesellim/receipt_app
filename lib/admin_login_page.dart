@@ -71,7 +71,7 @@ class _AdminLoginState extends State<AdminLogin> {
                             border: Border.all(color: Colors.grey, width: 2),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
-                        child: TextFormField(
+                        child: TextFormField(obscureText: true,
                           controller: _passwordController,
                         ),
                       ),
@@ -107,6 +107,8 @@ class _AdminLoginState extends State<AdminLogin> {
 
     if (_userNameController.text == mail &&
         _passwordController.text == password) {
+      _userNameController.clear();
+      _passwordController.clear();
       Navigator.push(
           context,
           MaterialPageRoute(

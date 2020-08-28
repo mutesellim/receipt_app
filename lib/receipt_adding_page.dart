@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cook_book/home_page.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CounterStorage {
@@ -147,8 +146,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                 children: [
                   RaisedButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
+                      Navigator.pop(context);
                     },
                     child: Text("Vazgeç"),
                   ),

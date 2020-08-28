@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/admin_login_page.dart';
@@ -133,9 +132,43 @@ class ReceiptSearch extends SearchDelegate<List> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text(query),
-    );
+    Future<List> getList() async {
+      List myList = [];
+      for (int i = 0; i < counter; i++) {
+        await _firestore
+            .document("receipts/allreceipts/receiptID/$i")
+            .get()
+            .then((value) {
+          myList.add(value.data["receiptTitle"]);
+        });
+      }
+      return myList;
+    }
+
+    return FutureBuilder(
+        future: getList(),
+        builder: (context, AsyncSnapshot<List> snapshot) {
+          if (snapshot.hasData) {
+            final List suggestionList =
+                snapshot.data.where((e) => e == query).toList();
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return ListTile(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DetailPage(snapshot.data.indexOf(query)))),
+                    leading: Icon(Icons.local_dining),
+                    title: Text(suggestionList[index]));
+              },
+              itemCount: suggestionList.length,
+            );
+          } else
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+        });
   }
 
   @override
@@ -159,7 +192,7 @@ class ReceiptSearch extends SearchDelegate<List> {
           if (snapshot.hasData) {
             final List suggestionList = query.isEmpty
                 ? snapshot.data
-                : snapshot.data.where((element) => element == query).toList();
+                : snapshot.data.where((e) => e == query).toList();
 
             return ListView.builder(
               itemBuilder: (context, index) {
