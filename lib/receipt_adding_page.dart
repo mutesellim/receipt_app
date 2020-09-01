@@ -1,48 +1,7 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-
-class CounterStorage {
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-
-    return File('$path/counter.txt');
-  }
-
-  Future<int> readCounter() async {
-    try {
-      final file = await _localFile;
-
-      // Read the file
-      String contents = await file.readAsString();
-
-      return int.parse(contents);
-    } catch (e) {
-      // If encountering an error, return 0
-      return 0;
-    }
-  }
-
-  Future<File> writeCounter(int counter) async {
-    final file = await _localFile;
-
-    // Write the file
-    return file.writeAsString('$counter');
-  }
-}
 
 class ReceiptAddingPage extends StatefulWidget {
-  final CounterStorage storage;
-
-  ReceiptAddingPage({Key key, @required this.storage}) : super(key: key);
-
   @override
   _ReceiptAddingPageState createState() => _ReceiptAddingPageState();
 }
@@ -51,6 +10,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   var _formKey = GlobalKey<FormState>();
   var _scaffoldKey = GlobalKey<ScaffoldState>();
   final Firestore _firestore = Firestore.instance;
+  Map<String, dynamic> _myCounter = Map();
   Map<String, dynamic> _myReceipts = Map();
   String _receiptTitle, _receiptDescription, _videoURL, _pictureURL;
   int _counter;
@@ -59,20 +19,15 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.storage.readCounter().then((int value) {
-      setState(() {
-        _counter = value;
-      });
-    });
+    getCounter().then((value) => _counter = value);
   }
 
-  Future<File> _incrementCounter() {
-    setState(() {
-      _counter++;
+  Future<int> getCounter() async {
+    int counter;
+    await _firestore.document("receipts/allreceipts/").get().then((value) {
+      counter = value.data["receiptCount"];
     });
-
-    // Write the variable as a string to the file.
-    return widget.storage.writeCounter(_counter);
+    return counter;
   }
 
   @override
@@ -159,19 +114,24 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                         _myReceipts["receiptDescription"] = _receiptDescription;
                         _myReceipts["videoURL"] = _videoURL;
                         _myReceipts["pictureURL"] = _pictureURL;
+                        _myCounter["receiptCount"] = _counter;
 
                         _firestore
                             .document(
-                            "receipts/allreceipts/receiptID/$_counter")
+                                "receipts/allreceipts/receiptID/$_counter")
                             .setData(_myReceipts);
 
-
+                        _firestore
+                            .document("receipts/allreceipts/")
+                            .setData(_myCounter);
                         _incrementCounter();
+
+                        Future.delayed(const Duration(seconds: 2),
+                            () => _formKey.currentState.reset());
                         _scaffoldKey.currentState.showSnackBar(SnackBar(
                           content: Text("Tarif Eklendi"),
-                          duration: Duration(seconds: 1),
+                          duration: Duration(seconds: 2),
                         ));
-                        _formKey.currentState.reset();
                       }
                     },
                     child: Text("Kaydet"),
@@ -183,5 +143,9 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
         ),
       ),
     );
+  }
+
+  void _incrementCounter() {
+    _counter++;
   }
 }

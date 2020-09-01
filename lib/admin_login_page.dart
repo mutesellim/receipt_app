@@ -113,7 +113,7 @@ class _AdminLoginState extends State<AdminLogin> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  ReceiptAddingPage(storage: CounterStorage())));
+                  ReceiptAddingPage()));
     }
   }
 }

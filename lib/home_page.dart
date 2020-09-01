@@ -1,49 +1,24 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/admin_login_page.dart';
 import 'package:flutter_cook_book/receipt_detail_page.dart';
 import 'package:flutter_cook_book/receipt_list.dart';
-import 'package:path_provider/path_provider.dart';
-
-class MyOtherStorage {
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-
-    return File('$path/counter.txt');
-  }
-
-  Future<int> readCounter() async {
-    try {
-      final file = await _localFile;
-
-      // Read the file
-      String contents = await file.readAsString();
-
-      return int.parse(contents);
-    } catch (e) {
-      // If encountering an error, return 0
-      return 0;
-    }
-  }
-}
 
 class HomePage extends StatefulWidget {
-  final MyOtherStorage myOtherStorage;
-
-  HomePage({Key key, @required this.myOtherStorage}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 final Firestore _firestore = Firestore.instance;
+
+Future<int> getCounter() async {
+  int counter;
+  await _firestore.document("receipts/allreceipts/").get().then((value) {
+    counter = value.data["receiptCount"];
+  });
+  return counter;
+}
+
 var _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class _HomePageState extends State<HomePage> {
@@ -53,11 +28,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.myOtherStorage.readCounter().then((value) {
-      setState(() {
-        myCounter = value;
-      });
-    });
+    getCounter().then((value) => myCounter = value);
   }
 
   @override
@@ -94,9 +65,7 @@ class _HomePageState extends State<HomePage> {
         title: Text("Ana Sayfa"),
       ),
       body: Center(
-        child: ReceiptsList(
-          storage: MyStorage(),
-        ),
+        child: ReceiptsList(),
       ),
     );
   }
@@ -134,7 +103,7 @@ class ReceiptSearch extends SearchDelegate<List> {
   Widget buildResults(BuildContext context) {
     Future<List> getList() async {
       List myList = [];
-      for (int i = 0; i < counter; i++) {
+      for (int i = 0; i <= counter; i++) {
         await _firestore
             .document("receipts/allreceipts/receiptID/$i")
             .get()
@@ -175,7 +144,7 @@ class ReceiptSearch extends SearchDelegate<List> {
   Widget buildSuggestions(BuildContext context) {
     Future<List> getList() async {
       List myList = [];
-      for (int i = 0; i < counter; i++) {
+      for (int i = 0; i <= counter; i++) {
         await _firestore
             .document("receipts/allreceipts/receiptID/$i")
             .get()

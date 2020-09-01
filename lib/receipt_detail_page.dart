@@ -4,9 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 class DetailPage extends StatefulWidget {
-  int index;
+ final int _index;
 
-  DetailPage(this.index);
+  DetailPage(this._index);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -131,7 +131,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptTitle() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
+        .document("receipts/allreceipts/receiptID/" + widget._index.toString())
         .get()
         .then((value) {
       title = value.data["receiptTitle"];
@@ -142,7 +142,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getReceiptDescription() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
+        .document("receipts/allreceipts/receiptID/" + widget._index.toString())
         .get()
         .then((value) {
       title = value.data["receiptDescription"];
@@ -153,7 +153,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getVideoURL() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
+        .document("receipts/allreceipts/receiptID/" + widget._index.toString())
         .get()
         .then((value) {
       title = value.data["videoURL"];
@@ -164,7 +164,7 @@ class _DetailPageState extends State<DetailPage> {
   Future<String> getPictureURL() async {
     String title;
     await _firestore
-        .document("receipts/allreceipts/receiptID/" + widget.index.toString())
+        .document("receipts/allreceipts/receiptID/" + widget._index.toString())
         .get()
         .then((value) {
       title = value.data["pictureURL"];
