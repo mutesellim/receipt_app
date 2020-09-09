@@ -118,16 +118,17 @@ class ReceiptSearch extends SearchDelegate<List> {
         future: getList(),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.hasData) {
-            final List suggestionList =
-                snapshot.data.where((e) => e == query).toList();
+            final List suggestionList = snapshot.data
+                .where((e) => e.toString().contains(query))
+                .toList();
             return ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
                     onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                DetailPage(snapshot.data.indexOf(query)))),
+                            builder: (context) => DetailPage(
+                                snapshot.data.indexOf(suggestionList[index])))),
                     leading: Icon(Icons.local_dining),
                     title: Text(suggestionList[index]));
               },
@@ -161,7 +162,9 @@ class ReceiptSearch extends SearchDelegate<List> {
           if (snapshot.hasData) {
             final List suggestionList = query.isEmpty
                 ? snapshot.data
-                : snapshot.data.where((e) => e == query).toList();
+                : snapshot.data
+                    .where((e) => e.toString().contains(query))
+                    .toList();
 
             return ListView.builder(
               itemBuilder: (context, index) {
@@ -171,7 +174,7 @@ class ReceiptSearch extends SearchDelegate<List> {
                       MaterialPageRoute(
                           builder: (context) => DetailPage(query.isEmpty
                               ? index
-                              : snapshot.data.indexOf(query)))),
+                              : snapshot.data.indexOf(suggestionList[index])))),
                   leading: Icon(Icons.local_dining),
                   title: Text(suggestionList[index]),
                 );
