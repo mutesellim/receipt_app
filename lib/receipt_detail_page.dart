@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class DetailPage extends StatefulWidget {
- final int _index;
+  final int _index;
 
   DetailPage(this._index);
 
@@ -19,9 +19,10 @@ class _DetailPageState extends State<DetailPage> {
     super.initState();
   }
 
-
-
   final Firestore _firestore = Firestore.instance;
+  final FirebaseStorage _firebaseStorage = FirebaseStorage(
+      app: Firestore.instance.app,
+      storageBucket: 'gs://cookbook-453e5.appspot.com');
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +54,16 @@ class _DetailPageState extends State<DetailPage> {
                         future: getPictureURL(),
                         builder: (context, AsyncSnapshot<String> snapshot) {
                           if (snapshot.hasData) {
-                            return Image.asset(
-                              "assets/" + snapshot.data,
-                              width: myWidth,
-                              height: myHeight,
-                              fit: BoxFit.contain,
-                            );
+                            return FutureBuilder(
+                                future: getURL(snapshot.data),
+                                builder: (context, AsyncSnapshot snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Image.network(snapshot.data);
+                                  } else
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                });
                           } else
                             return Center(
                               child: CircularProgressIndicator(),
@@ -75,7 +80,7 @@ class _DetailPageState extends State<DetailPage> {
                             return Text(
                               snapshot.data,
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             );
                           } else
                             return Center(
@@ -91,11 +96,11 @@ class _DetailPageState extends State<DetailPage> {
                         builder: (context, AsyncSnapshot<String> snapshot) {
                           if (snapshot.hasData) {
                             return InkWell(
-                              child: Text(
-                                snapshot.data,
-                                style: TextStyle(
-                                    fontSize: 12,)
-                              ),onTap: ()=>launch(snapshot.data),
+                              child: Text("Tarif Adresine Git",
+                                  style: TextStyle(
+                                    fontSize: 14,fontWeight: FontWeight.bold
+                                  )),
+                              onTap: () => launch(snapshot.data),
                             );
                           } else
                             return Center(
@@ -170,5 +175,10 @@ class _DetailPageState extends State<DetailPage> {
       title = value.data["pictureURL"];
     });
     return title;
+  }
+
+  Future<dynamic> getURL(String data) async {
+    var url = await _firebaseStorage.ref().child("" + data).getDownloadURL();
+    return url;
   }
 }

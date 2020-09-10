@@ -110,6 +110,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                       final snackBar = SnackBar(content: Text("Tarif Eklendi"));
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
+                        _incrementCounter();
                         _myReceipts["receiptTitle"] = _receiptTitle;
                         _myReceipts["receiptDescription"] = _receiptDescription;
                         _myReceipts["videoURL"] = _videoURL;
@@ -124,7 +125,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                         _firestore
                             .document("receipts/allreceipts/")
                             .setData(_myCounter);
-                        _incrementCounter();
+
 
                         Future.delayed(const Duration(seconds: 2),
                             () => _formKey.currentState.reset());

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cook_book/receipt_detail_page.dart';
@@ -9,6 +10,10 @@ class ReceiptsList extends StatefulWidget {
 }
 
 final Firestore _firestore = Firestore.instance;
+
+final FirebaseStorage _firebaseStorage = FirebaseStorage(
+    app: Firestore.instance.app,
+    storageBucket: 'gs://cookbook-453e5.appspot.com');
 
 Future<int> getCounter() async {
   int counter;
@@ -25,7 +30,7 @@ class _ReceiptsListState extends State<ReceiptsList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCounter().then((value) => myCounter = value+1);
+    getCounter().then((value) => myCounter = (value+1));
   }
 
   @override
@@ -59,6 +64,12 @@ class _ReceiptsListState extends State<ReceiptsList> {
           return title;
         }
 
+        Future<dynamic> getURL(String data) async {
+          var url =
+              await _firebaseStorage.ref().child("" + data).getDownloadURL();
+          return url;
+        }
+
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -76,12 +87,16 @@ class _ReceiptsListState extends State<ReceiptsList> {
                       future: getPictureURL(),
                       builder: (context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.hasData) {
-                          return Image.asset(
-                            "assets/" + snapshot.data,
-                            //height: myHeight,
-                            width: myWidth,
-                            fit: BoxFit.contain,
-                          );
+                          return FutureBuilder(
+                              future: getURL(snapshot.data),
+                              builder: (context, AsyncSnapshot snapshot) {
+                                if (snapshot.hasData) {
+                                  return Image.network(snapshot.data);
+                                } else
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                              });
                         } else
                           return Center(
                             child: CircularProgressIndicator(),
