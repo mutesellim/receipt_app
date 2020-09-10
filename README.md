@@ -1,16 +1,15 @@
 # flutter_cook_book
 
-Flutter Cook Book Description.
+Flutter Cook Book Android Studio ile geliştirilmiş bir yemek tarifi uygulamasıdır. Kayıtlı kullanıcılar yeni tarifler ekleyebilmektedir. Tarif için kullanılan websiteleri detay sayfasından erişilebilirdir.
 
-## Getting Started
+## [](https://github.com/mutesellim/receipt_app#getting-started)Uygulama Hakkında
+Bu Proje için Kullanılan Database Cloud Firestore'dur.
+Kullanılan IDE Android Studio.
+Kullanılan Dil Flutter idir syntax Dart diline aittir.
+Android , IOS ve WEB destekler.
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+Bir kaç yardımcı Link:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+-   [Flutter](https://flutter.dev/docs)
+-   [Cloud Firestore](https://firebase.google.com/products/firestore?gclid=EAIaIQobChMIkPKX49_e6wIVR4fVCh008wPWEAAYASAAEgKsIPD_BwE)
