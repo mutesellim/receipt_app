@@ -8,7 +8,36 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:517238924652:android:2cb0e5cd29590ece9b3f49",
+        "mobilesdk_app_id": "1:517238924652:android:32108c9830fbfc889b3f49",
+        "android_client_info": {
+          "package_name": "com.example.CookBook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "517238924652-hsa9ql63nsn43ohhmbi08reqcaoob5el.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeY2FR5L8-UGqtur7gb5JsYNX6sAx7qLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "517238924652-hsa9ql63nsn43ohhmbi08reqcaoob5el.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517238924652:android:27c6970c4722231e9b3f49",
         "android_client_info": {
           "package_name": "com.example.flutter_cook_book"
         }
