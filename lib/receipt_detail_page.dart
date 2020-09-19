@@ -26,8 +26,8 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    double myHeight = MediaQuery.of(context).size.height / 3;
-    double myWidth = MediaQuery.of(context).size.width * (5 / 6);
+    final _width = MediaQuery.of(context).size.width;
+    final _height = MediaQuery.of(context).size.height / 3;
 
     return Scaffold(
         appBar: AppBar(
@@ -58,7 +58,8 @@ class _DetailPageState extends State<DetailPage> {
                                 future: getURL(snapshot.data),
                                 builder: (context, AsyncSnapshot snapshot) {
                                   if (snapshot.hasData) {
-                                    return Image.network(snapshot.data);
+                                    return Image.network(snapshot.data,
+                                        width: _width, height: _height);
                                   } else
                                     return Center(
                                       child: CircularProgressIndicator(),
@@ -98,8 +99,8 @@ class _DetailPageState extends State<DetailPage> {
                             return InkWell(
                               child: Text("Tarif Adresine Git",
                                   style: TextStyle(
-                                    fontSize: 14,fontWeight: FontWeight.bold
-                                  )),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold)),
                               onTap: () => launch(snapshot.data),
                             );
                           } else

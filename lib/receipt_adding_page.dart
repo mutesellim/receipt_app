@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ReceiptAddingPage extends StatefulWidget {
   @override
@@ -14,12 +18,23 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
   Map<String, dynamic> _myReceipts = Map();
   String _receiptTitle, _receiptDescription, _videoURL, _pictureURL;
   int _counter;
+  final _storage = FirebaseStorage.instance;
+  PickedFile _image;
+  var _file;
+  final _picker = ImagePicker();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getCounter().then((value) => _counter = value);
+  }
+
+  getImage() async {
+    _image = await _picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _file = File(_image.path);
+    });
   }
 
   Future<int> getCounter() async {
@@ -68,7 +83,7 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                   },
                   decoration: InputDecoration(
                       hintText: "Video için URL Giriniz",
-                      labelText: "URL",
+                      labelText: "VideoURL",
                       border: OutlineInputBorder()),
                 ),
               ),
@@ -92,10 +107,24 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                     _pictureURL = text;
                   },
                   decoration: InputDecoration(
-                      hintText: "Resim URL giriniz",
+                      hintText: "Resim Adı giriniz",
                       labelText: "PictureURL",
                       border: OutlineInputBorder()),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _file == null
+                    ? RaisedButton(
+                        onPressed: () => getImage(),
+                        child: Text("Lütfen Resim Seçiniz"),
+                      )
+                    : Container(
+                        height: 80,
+                        width: 80,
+                        child: Center(
+                          child: Image.file(File(_file.path)),
+                        )),
               ),
               ButtonBar(
                 children: [
@@ -125,10 +154,14 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
                         _firestore
                             .document("receipts/allreceipts/")
                             .setData(_myCounter);
+                        saveToFireStore();
 
-
-                        Future.delayed(const Duration(seconds: 2),
-                            () => _formKey.currentState.reset());
+                        Future.delayed(const Duration(seconds: 2), () {
+                          _formKey.currentState.reset();
+                          setState(() {
+                            _file = null;
+                          });
+                        });
                         _scaffoldKey.currentState.showSnackBar(SnackBar(
                           content: Text("Tarif Eklendi"),
                           duration: Duration(seconds: 2),
@@ -148,5 +181,13 @@ class _ReceiptAddingPageState extends State<ReceiptAddingPage> {
 
   void _incrementCounter() {
     _counter++;
+  }
+
+  Future<void> saveToFireStore() async {
+    if (_image != null && _pictureURL != null) {
+      await _storage.ref().child('' + _pictureURL).putFile(_file).onComplete;
+    } else {
+      print("No Path Received");
+    }
   }
 }
